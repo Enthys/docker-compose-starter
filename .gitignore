@@ -1,0 +1,6 @@
+tmp
+testdata
+testdata/*
+.idea
+.vscode
+.vim
