@@ -41,6 +41,7 @@ type DockerCompose struct {
 }
 
 func (d *docker) ReloadDockerCompose() error {
+	d.dockerCompose = map[string]*DockerCompose{}
 	return filepath.WalkDir(".", func(path string, info fs.DirEntry, err error) error {
 		if err != nil {
 			return err

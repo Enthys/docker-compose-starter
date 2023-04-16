@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Docker Starter</title>
+		<script src="/static/index.js" charset="utf-8"></script>
+	</head>
+	<body>
+		<h1>Docker starter</h1>	
+		<form action="/reload" method="POST">
+			<button>Reload Compose Files</button>
+		</form>
+		<dl>
+			{{range .ComposeFiles}}
+			<dt style="margin-top: 15px"><a href="/{{.ID}}">{{.Path}}</a></dt>
+			<dd>- ID: {{.ID}}</dd>
+			<dd>- Name: {{.Name}}</dd>
+			<dd>- Path: {{.Path}}</dd>
+			{{end}}
+		</dl>
+	</body>
+</html>
