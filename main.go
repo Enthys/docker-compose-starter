@@ -1,12 +1,22 @@
 package main
 
 import (
+	"embed"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/mux"
+)
+
+var (
+	//go:embed templates
+	tmpFiles embed.FS
+
+	//go:embed static
+	staticFiles embed.FS
 )
 
 func main() {
@@ -21,7 +31,10 @@ func main() {
 	log.Println(workdir)
 
 	r := mux.NewRouter()
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+
+	staticFS := fs.FS(staticFiles)
+	staticContent, err := fs.Sub(staticFS, "static")
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.FS(staticContent))))
 
 	r.PathPrefix("/reload").Methods("POST").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := d.ReloadDockerCompose(); err != nil {
@@ -43,11 +56,10 @@ func main() {
 			return
 		}
 
-		tmp := template.Must(template.ParseFiles("./templates/compose.html"))
+		tmp := template.Must(template.ParseFS(tmpFiles, "templates/compose.html"))
 		composeFile := d.GetDockerCompose(composeId)
 		if composeFile == nil {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("Not Found!"))
+			http.Redirect(w, r, "/", http.StatusPermanentRedirect)
 			return
 		}
 
@@ -57,7 +69,7 @@ func main() {
 	})
 
 	r.PathPrefix("/").Methods("GET").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tmp := template.Must(template.ParseFiles("./templates/index.html"))
+		tmp := template.Must(template.ParseFS(tmpFiles, "templates/index.html"))
 		if err := tmp.Execute(w, struct {
 			ComposeFiles []*DockerCompose
 		}{ComposeFiles: d.AllDockerCompose()}); err != nil {

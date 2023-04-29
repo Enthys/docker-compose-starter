@@ -4,11 +4,16 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width">
 		<title>Docker Compose: {{.Path}}</title>
+		<link rel="stylesheet" href="/static/style.css"></link>
 	</head>
 	<body>
+		<a href="/"><button>&lt; Back</button></a>
 		<h1>Docker compose file</h1>
 		<h2>Name: {{.Name}}</h2>
 		<h2>Path: {{.Path}}</h2>
 		<h2>ID: {{.ID}}</h2>
+		<div id="logs">
+		</div>
+		<script defer src="/static/compose.js"></script>
 	</body>
 </html>
